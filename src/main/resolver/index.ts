@@ -198,31 +198,7 @@ export function resolveFile(parsedFile: IParsedFile): IResolvedFile {
     }
   }
 
-  // Add types defined in this file to our Identifier map
-  function addIdentiferForStatement(statement: ThriftStatement): void {
-    switch (statement.type) {
-      case SyntaxType.StructDefinition:
-      case SyntaxType.UnionDefinition:
-      case SyntaxType.ExceptionDefinition:
-      case SyntaxType.EnumDefinition:
-      case SyntaxType.TypedefDefinition:
-      case SyntaxType.ConstDefinition:
-      case SyntaxType.ServiceDefinition:
-        identifiers[statement.name.value] = {
-          name: statement.name.value,
-          resolvedName: statement.name.value,
-          definition: statement,
-        }
-        return
-
-      default:
-        return
-    }
-  }
-
   function resolveStatement(statement: ThriftStatement): ThriftStatement {
-    addIdentiferForStatement(statement)
-
     switch (statement.type) {
       case SyntaxType.ConstDefinition:
         return {
@@ -304,6 +280,28 @@ export function resolveFile(parsedFile: IParsedFile): IResolvedFile {
     return false
   }
 
+  // Add types defined in this file to our Identifier map
+  function addIdentiferForStatement(statement: ThriftStatement): void {
+    switch (statement.type) {
+      case SyntaxType.StructDefinition:
+      case SyntaxType.UnionDefinition:
+      case SyntaxType.ExceptionDefinition:
+      case SyntaxType.EnumDefinition:
+      case SyntaxType.ConstDefinition:
+      case SyntaxType.TypedefDefinition:
+      case SyntaxType.ServiceDefinition:
+        identifiers[statement.name.value] = {
+          name: statement.name.value,
+          resolvedName: statement.name.value,
+          definition: statement,
+        }
+        return
+
+      default:
+        return
+    }
+  }
+
   function resolveName(name: string): string {
     const parts: Array<string> = name.split('.')
 
@@ -346,7 +344,11 @@ export function resolveFile(parsedFile: IParsedFile): IResolvedFile {
     namespace,
     includes: resolvedIncludes,
     identifiers,
-    body: parsedFile.ast.body.map(resolveStatement),
+    body: parsedFile.ast.body.map((statement: ThriftStatement) => {
+      const resolvedStatement: ThriftStatement = resolveStatement(statement)
+      addIdentiferForStatement(resolvedStatement)
+      return resolvedStatement
+    }),
     errors: [],
   }
 }

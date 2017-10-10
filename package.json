@@ -1,6 +1,6 @@
 {
   "name": "@creditkarma/thrift-typescript",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "Generate TypeScript from Thrift IDL files",
   "main": "./dist/main/index.js",
   "types": "./dist/main/index.d.ts",
@@ -40,7 +40,7 @@
     "url": "https://github.com/creditkarma/thrift-typescript"
   },
   "dependencies": {
-    "@creditkarma/thrift-parser": "^0.0.10",
+    "@creditkarma/thrift-parser": "^0.0.12",
     "glob": "^7.1.2",
     "typescript": "^2.4.2"
   },
